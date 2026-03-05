@@ -1,33 +1,10 @@
 # Project Backend
 
-Simple FastAPI backend with MySQL authentication—**signup** and **login**. Each teammate can run it locally; ideal for development and for later load testing (e.g. Locust, JMeter, k6) in SENG 533.
+Simple FastAPI backend with MySQL authentication—**signup** and **login**. Each teammate runs it locally; ideal for development and load testing (Locust, JMeter, k6) in SENG 533.
 
 ---
 
-## Setup
-
-1. Install MySQL
-2. Run **database_setup.sql** (in MySQL Workbench or CLI)
-3. Install dependencies
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Update the database password in **app/database.py** (see [How to run](#how-to-run-the-project-teammates--ta) below)
-5. Start server
-
-   ```bash
-   uvicorn app.main:app --reload
-   ```
-
-6. Open
-
-   **http://127.0.0.1:8000/docs**
-
----
-
-## Repo structure
+## Repo Structure
 
 ```
 Project-Backend/
@@ -42,13 +19,9 @@ Project-Backend/
 └── README.md
 ```
 
-`database_setup.sql` creates the `userdb` database and `users` table so anyone can get the same schema with one run in MySQL Workbench.
-
 ---
 
-## How to run the project (teammates / TA)
-
-Follow these steps once per machine.
+## How to Run
 
 ### 1. Clone the repo
 
@@ -63,28 +36,25 @@ cd Project-Backend
 pip install -r requirements.txt
 ```
 
-This installs: **fastapi**, **uvicorn**, **mysql-connector-python**, **passlib[bcrypt]**.
+Installs: **fastapi**, **uvicorn**, **mysql-connector-python**, **passlib[bcrypt]**.
 
 ### 3. Install MySQL
 
-Install **MySQL Server** on your machine, then open **MySQL Workbench** (or any MySQL client).
+Install **MySQL Server**, then open **MySQL Workbench** (or any MySQL client).
 
 ### 4. Run the database setup script
 
-In MySQL Workbench (or CLI), open and run:
+Open and run **`database_setup.sql`** in MySQL Workbench (or CLI).
 
-**`database_setup.sql`**
-
-It creates the database and table:
-
+Creates:
 - Database: `userdb`
 - Table: `users` (id, username, email, password, pictureURL, userDescriptionURL)
 
-Run the whole file once. Database is ready.
+Run once. Done.
 
 ### 5. Set your database password
 
-Edit **`app/database.py`** and set the connection to match your local MySQL user and password:
+Edit **`app/database.py`**:
 
 ```python
 mysql.connector.connect(
@@ -95,45 +65,64 @@ mysql.connector.connect(
 )
 ```
 
-The password will be different on each laptop.
+Password will differ on each machine.
 
-### 6. Start the backend
+### 6. Start the server
+
+From the **Project-Backend** folder:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Then open:
+Open **http://127.0.0.1:8000/docs**
 
-**http://127.0.0.1:8000/docs**
-
-Swagger UI loads. You can try:
-
-- **POST /signup** — register a user  
-- **POST /login** — authenticate
+Test: **POST /signup** · **POST /login**
 
 ---
 
-## Setup checklist (quick reference)
+## API Endpoints
 
-1. Install MySQL Server  
-2. Run **database_setup.sql** in MySQL Workbench (or CLI)  
-3. Install Python deps: `pip install -r requirements.txt`  
-4. Update the database password in **app/database.py**  
-5. Start server: `uvicorn app.main:app --reload`  
-6. Open **http://127.0.0.1:8000/docs**
+| Method | Path    | Description       |
+|--------|---------|-------------------|
+| POST   | /signup | Register a user   |
+| POST   | /login  | Authenticate user |
 
 ---
 
-## API endpoints
+## SENG 533 Note
 
-| Method | Path    | Description        |
-|--------|---------|--------------------|
-| POST   | /signup | Register a user    |
-| POST   | /login  | Authenticate user  |
+Every teammate runs the backend locally with the same schema. Point load-testing tools (Locust, JMeter, k6) at `http://127.0.0.1:8000` for performance evaluation.
 
 ---
 
-## SENG 533 note
+## Future Testing: Load Simulation
 
-This layout lets every teammate run the backend locally with the same schema. You can point load-testing tools (Locust, JMeter, k6) at `http://127.0.0.1:8000` for performance evaluation.
+Add a read endpoint to `app/routes.py` to simulate realistic workloads (e.g. 80% reads / 20% writes):
+
+```python
+@router.get("/user/{username}")
+def get_user(username: str):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT id, username, email, pictureURL, userDescriptionURL FROM users WHERE username = %s",
+        (username,)
+    )
+    user = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+```
+
+The backend will then support:
+
+| Method | Path              | Description        |
+|--------|-------------------|--------------------|
+| POST   | /signup           | Create user        |
+| POST   | /login            | Authenticate user  |
+| GET    | /user/{username}  | Read user profile  |
+
+Use **Locust** to load test at 10 / 100 / 250 concurrent users and measure **response time**, **throughput**, and **latency** — the core metrics for your SENG 533 project.
