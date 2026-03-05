@@ -2,14 +2,12 @@
 
 from pydantic import BaseModel
 
-
 class UserSignup(BaseModel):
     username: str
     email: str
     password: str
-    pictureURL: str
-    userDescriptionURL: str
-
+    pictureURL: str | None = None
+    userDescriptionURL: str | None = None
 
 class UserLogin(BaseModel):
     username: str
