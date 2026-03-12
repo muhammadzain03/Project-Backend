@@ -2,22 +2,19 @@ from storage.Database import Database
 
 
 class UserModel:
-
     @staticmethod
     def _insert_user_db(
-        email:str,
-        username:str,
-        password:str,
-        pictureURL:str | None,
-        userDescriptionURL:str | None
-
+        email: str,
+        username: str,
+        password: str,
+        pictureURL: str | None,
+        userDescriptionURL: str | None,
     ) -> bool:
         try:
-
             conn = Database.get_connection()
             cursor = conn.cursor()
-            connection_Status = conn.is_connected()
-            if not connection_Status:
+            connection_status = conn.is_connected()
+            if not connection_status:
                 raise ConnectionError("Failed to connect to the database.")
 
             cursor.execute(
@@ -30,8 +27,8 @@ class UserModel:
                     username,
                     password,
                     pictureURL,
-                    userDescriptionURL
-                )
+                    userDescriptionURL,
+                ),
             )
 
             conn.commit()
@@ -53,7 +50,7 @@ class UserModel:
 
             cursor.execute(
                 "DELETE FROM users WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             conn.commit()
@@ -67,8 +64,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
-
-
+    @staticmethod
     def _save_profile_url_db(email: str, profile_url: str) -> bool:
         try:
             conn = Database.get_connection()
@@ -76,7 +72,7 @@ class UserModel:
 
             cursor.execute(
                 "UPDATE users SET pictureURL = %s WHERE email = %s",
-                (profile_url, email)
+                (profile_url, email),
             )
 
             conn.commit()
@@ -90,6 +86,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
+    @staticmethod
     def _remove_profile_url_db(email: str) -> bool:
         try:
             conn = Database.get_connection()
@@ -97,7 +94,7 @@ class UserModel:
 
             cursor.execute(
                 "UPDATE users SET pictureURL = NULL WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             conn.commit()
@@ -111,7 +108,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
-
+    @staticmethod
     def _save_description_url_db(email: str, description_url: str) -> bool:
         try:
             conn = Database.get_connection()
@@ -119,7 +116,7 @@ class UserModel:
 
             cursor.execute(
                 "UPDATE users SET userDescriptionURL = %s WHERE email = %s",
-                (description_url, email)
+                (description_url, email),
             )
 
             conn.commit()
@@ -133,7 +130,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
-
+    @staticmethod
     def _remove_description_url_db(email: str) -> bool:
         try:
             conn = Database.get_connection()
@@ -141,7 +138,7 @@ class UserModel:
 
             cursor.execute(
                 "UPDATE users SET userDescriptionURL = NULL WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             conn.commit()
@@ -155,6 +152,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
+    @staticmethod
     def _update_password_db(email: str, new_password: str) -> bool:
         try:
             conn = Database.get_connection()
@@ -162,7 +160,7 @@ class UserModel:
 
             cursor.execute(
                 "UPDATE users SET password = %s WHERE email = %s",
-                (new_password, email)
+                (new_password, email),
             )
 
             conn.commit()
@@ -176,12 +174,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
-  
-  
-  
-  
-  
-  # Getters for specific fields (username, email, user ID) based on email or username
+    # Getters for specific fields (username, email, user ID) based on email or username
 
     @staticmethod
     def _get_full_profile_by_uid_db(email: str) -> dict | None:
@@ -191,7 +184,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT id, email, username, password, pictureURL, userDescriptionURL FROM users WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             result = cursor.fetchone()
@@ -202,7 +195,7 @@ class UserModel:
                     "username": result[2],
                     "password": result[3],
                     "pictureURL": result[4],
-                    "userDescriptionURL": result[5]
+                    "userDescriptionURL": result[5],
                 }
             return None
         except Exception as e:
@@ -214,6 +207,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
+    @staticmethod
     def _get_username_by_email_db(email: str) -> str | None:
         try:
             conn = Database.get_connection()
@@ -221,7 +215,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT username FROM users WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             result = cursor.fetchone()
@@ -237,7 +231,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
-
+    @staticmethod
     def _get_email_by_username_db(username: str) -> str | None:
         try:
             conn = Database.get_connection()
@@ -245,7 +239,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT email FROM users WHERE username = %s",
-                (username,)
+                (username,),
             )
 
             result = cursor.fetchone()
@@ -261,7 +255,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
-
+    @staticmethod
     def _get_user_id_by_email_db(email: str) -> str | None:
         try:
             conn = Database.get_connection()
@@ -269,7 +263,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT id FROM users WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             result = cursor.fetchone()
@@ -285,6 +279,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
+    @staticmethod
     def _get_user_profile_pic_url_by_email_db(email: str) -> str | None:
         try:
             conn = Database.get_connection()
@@ -292,7 +287,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT pictureURL FROM users WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             result = cursor.fetchone()
@@ -308,6 +303,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
+    @staticmethod
     def _get_user_description_url_by_email_db(email: str) -> str | None:
         try:
             conn = Database.get_connection()
@@ -315,7 +311,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT userDescriptionURL FROM users WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             result = cursor.fetchone()
@@ -331,7 +327,7 @@ class UserModel:
             if conn and conn.is_connected():
                 conn.close()
 
-
+    @staticmethod
     def _get_user_password_by_email_db(email: str) -> str | None:
         try:
             conn = Database.get_connection()
@@ -339,7 +335,7 @@ class UserModel:
 
             cursor.execute(
                 "SELECT password FROM users WHERE email = %s",
-                (email,)
+                (email,),
             )
 
             result = cursor.fetchone()
