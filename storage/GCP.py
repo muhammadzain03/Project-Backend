@@ -4,7 +4,7 @@ from flask import Blueprint
 from google.cloud import storage
 from dotenv import load_dotenv
 
-import config
+from utils import config
 
 load_dotenv(override=True)
 

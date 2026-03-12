@@ -9,7 +9,8 @@ load_dotenv()
 
 
 class BaseConfig:
-    GCP_BUCKET = os.environ.get("GCP_BUCKET")
+    GCS_BUCKET = os.environ.get("GCS_BUCKET")
+    GOOGLE_APPLICATION_CREDENTIALS = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
     DATABASE_HOST = os.environ.get("DATABASE_HOST")
     DATABASE_USER = os.environ.get("DATABASE_USER")

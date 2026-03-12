@@ -1,6 +1,6 @@
 # Project Backend
 
-Simple FastAPI backend with MySQL authentication—**signup** and **login**. Each teammate runs it locally; ideal for development and load testing (Locust, JMeter, k6) in SENG 533.
+Flask backend with MySQL authentication. Supports user signup, login, and profile management. Each teammate runs it locally — ideal for development and load testing (Locust, JMeter, k6) in SENG 533.
 
 ---
 
@@ -8,15 +8,25 @@ Simple FastAPI backend with MySQL authentication—**signup** and **login**. Eac
 
 ```
 Project-Backend/
-├── app/
-│   ├── main.py
-│   ├── routes.py
-│   ├── schemas.py
-│   ├── utils.py
-│   └── database.py
-├── database_setup.sql
+├── routes/
+│   ├── authroutes.py        # POST /auth/signup, POST /auth/login
+│   └── userRoutes.py        # GET/DELETE /user/{email}, profile/description URL endpoints
+├── services/
+│   ├── authServices.py      # Auth business logic
+│   └── userServices.py      # User data operations
+├── storage/
+│   ├── Database.py          # MySQL connection
+│   ├── dbQueries.py         # All raw SQL queries
+│   └── GCP.py               # Google Cloud Storage connection
+├── utils/
+│   └── config.py            # Reads credentials from .env
+├── credentials/             # GCP service account key (NOT committed)
+│   └── gcp-key.json
+├── app.py                   # Flask app entry point
+├── database_setup.sql       # Creates userdb and users table
 ├── requirements.txt
-└── README.md
+├── .env                     # Local credentials (NOT committed)
+└── .gitignore
 ```
 
 ---
@@ -36,7 +46,7 @@ cd Project-Backend
 pip install -r requirements.txt
 ```
 
-Installs: **fastapi**, **uvicorn**, **mysql-connector-python**, **passlib[bcrypt]**.
+Installs: **flask**, **mysql-connector-python**, **bcrypt**, **python-dotenv**, **google-cloud-storage**.
 
 ### 3. Install MySQL
 
@@ -52,77 +62,72 @@ Creates:
 
 Run once. Done.
 
-### 5. Set your database password
+### 5. Create your .env file
 
-Edit **`app/database.py`**:
+Create a `.env` file in the project root:
 
-```python
-mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="your_password_here",
-    database="userdb"
-)
+```env
+DATABASE_HOST=localhost
+DATABASE_USER=root
+DATABASE_PASSWORD=your_password_here
+DATABASE_NAME=userdb
+DATABASE_PORT=3306
+
+GCS_BUCKET=your-bucket-name
+GOOGLE_APPLICATION_CREDENTIALS=credentials/your-key.json
 ```
 
-Password will differ on each machine.
+Password will differ on each machine. Leave GCS fields empty if not using Google Cloud yet.
 
 ### 6. Start the server
 
 From the **Project-Backend** folder:
 
 ```bash
-uvicorn app.main:app --reload
+python app.py
 ```
 
-Open **http://127.0.0.1:8000/docs**
-
-Test: **POST /signup** · **POST /login**
+Server runs at **http://127.0.0.1:5000**
 
 ---
 
 ## API Endpoints
 
-| Method | Path    | Description       |
-|--------|---------|-------------------|
-| POST   | /signup | Register a user   |
-| POST   | /login  | Authenticate user |
+### Auth
+
+| Method | Path          | Body                              | Description       |
+|--------|---------------|-----------------------------------|-------------------|
+| POST   | /auth/signup  | `{email, username, password}`     | Register a user   |
+| POST   | /auth/login   | `{email, password}`               | Authenticate user |
+
+### User
+
+| Method | Path                          | Body          | Description              |
+|--------|-------------------------------|---------------|--------------------------|
+| GET    | /user/{email}                 | —             | Get user profile         |
+| DELETE | /user/{email}                 | —             | Delete user              |
+| PUT    | /user/{email}/profile-url     | `{url}`       | Update profile picture   |
+| DELETE | /user/{email}/profile-url     | —             | Remove profile picture   |
+| PUT    | /user/{email}/description-url | `{url}`       | Update description file  |
+| DELETE | /user/{email}/description-url | —             | Remove description file  |
+
+---
+
+## Architecture
+
+```
+Request → routes/ → services/ → storage/dbQueries.py → storage/Database.py → MySQL
+```
+
+- **routes/** — HTTP layer. Parses requests, validates input, returns JSON responses.
+- **services/** — Business logic. No HTTP knowledge.
+- **storage/dbQueries.py** — All raw SQL queries.
+- **storage/Database.py** — MySQL connection using `.env` credentials.
+- **utils/config.py** — Loads `.env` and exposes all config values.
+- **storage/GCP.py** — Google Cloud Storage connection for file uploads.
 
 ---
 
 ## SENG 533 Note
 
-Every teammate runs the backend locally with the same schema. Point load-testing tools (Locust, JMeter, k6) at `http://127.0.0.1:8000` for performance evaluation.
-
----
-
-## Future Testing: Load Simulation
-
-Add a read endpoint to `app/routes.py` to simulate realistic workloads (e.g. 80% reads / 20% writes):
-
-```python
-@router.get("/user/{username}")
-def get_user(username: str):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(
-        "SELECT id, username, email, pictureURL, userDescriptionURL FROM users WHERE username = %s",
-        (username,)
-    )
-    user = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-```
-
-The backend will then support:
-
-| Method | Path              | Description        |
-|--------|-------------------|--------------------|
-| POST   | /signup           | Create user        |
-| POST   | /login            | Authenticate user  |
-| GET    | /user/{username}  | Read user profile  |
-
-Use **Locust** to load test at 10 / 100 / 250 concurrent users and measure **response time**, **throughput**, and **latency** — the core metrics for your SENG 533 project.
+Every teammate runs the backend locally with the same schema. Point load-testing tools (Locust, JMeter, k6) at `http://127.0.0.1:5000` for performance evaluation — measure response time, throughput, and latency at 10 / 100 / 250 concurrent users.
