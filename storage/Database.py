@@ -1,14 +1,16 @@
 import mysql.connector  # type: ignore
 from dotenv import load_dotenv
+
 import utils.config as config
 
 load_dotenv()
 
 dbhost = config.BaseConfig.DATABASE_HOST
 dbuser = config.BaseConfig.DATABASE_USER
-dbpwd  = config.BaseConfig.DATABASE_PASSWORD
+dbpwd = config.BaseConfig.DATABASE_PASSWORD
 dbname = config.BaseConfig.DATABASE_NAME
 dbport = config.BaseConfig.DATABASE_PORT
+
 
 class Database:
     @staticmethod
