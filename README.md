@@ -152,7 +152,7 @@ Request → routes/ → services/ → storage/dbQueries.py → storage/Database.
 - **database/Database.py** — MySQL connection using `.env` credentials.
 - **database/dbQueries.py** — All raw SQL queries.
 - **cloudStorage/GCP.py** — Google Cloud Storage connection for file uploads.
-- **cloudStorage/userInfoStorage.py** - Functions for Upload/Delete user data on GCP Bucket
+- **cloudStorage/userInfoStorage.py** - Functions to Upload/Delete user data on GCP Bucket
 - **utils/config.py** — Loads `.env` and exposes all config values.
 
 ---
