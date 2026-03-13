@@ -7,26 +7,43 @@ Flask backend with MySQL authentication. Supports user signup, login, and profil
 ## Repo Structure
 
 ```
-Project-Backend/
-├── routes/
-│   ├── authroutes.py        # POST /auth/signup, POST /auth/login
-│   └── userRoutes.py        # GET/DELETE /user/{email}, profile/description URL endpoints
-├── services/
-│   ├── authServices.py      # Auth business logic
-│   └── userServices.py      # User data operations
-├── storage/
-│   ├── Database.py          # MySQL connection
-│   ├── dbQueries.py         # All raw SQL queries
-│   └── GCP.py               # Google Cloud Storage connection
-├── utils/
-│   └── config.py            # Reads credentials from .env
-├── credentials/             # GCP service account key (NOT committed)
-│   └── gcp-key.json
-├── app.py                   # Flask app entry point
-├── database_setup.sql       # Creates userdb and users table
-├── requirements.txt
-├── .env                     # Local credentials (NOT committed)
-└── .gitignore
+
+.
+└── Project-Backend
+    │ 
+    ├── app.py
+    │ 
+    ├── cloudStorage
+    │   ├── __init__.py
+    │   ├── GCP.py
+    │   └── userInfoStorage.py
+    │ 
+    ├── credentials
+    │   └── seng533-490008-98ae5a3775f1.json
+    │ 
+    ├── database
+    │   ├── __init__.py
+    │   ├── Database.py
+    │   └── dbQueries.py
+    │ 
+    ├── requirements.txt
+    │ 
+    ├── routes
+    │   ├── __init__.py
+    │   ├── authroutes.py
+    │   ├── GetUserInfoRoutes.py
+    │   └── UpdateUserInfo.py
+    │ 
+    ├── services
+    │   ├── __init__.py
+    │   ├── authServices.py
+    │   ├── GCPservices.py
+    │   └── userServices.py
+    │ 
+    └── utils
+        ├── __init__.py
+        └── config.py
+
 ```
 
 ---
@@ -42,11 +59,11 @@ cd Project-Backend
 
 ### 2. Install Python dependencies
 
+- (Optional) Make a virtual environment
+
 ```bash
 pip install -r requirements.txt
 ```
-
-Installs: **flask**, **mysql-connector-python**, **bcrypt**, **python-dotenv**, **google-cloud-storage**.
 
 ### 3. Install MySQL
 
@@ -57,6 +74,7 @@ Install **MySQL Server**, then open **MySQL Workbench** (or any MySQL client).
 Open and run **`database_setup.sql`** in MySQL Workbench (or CLI).
 
 Creates:
+
 - Database: `userdb`
 - Table: `users` (id, username, email, password, pictureURL, userDescriptionURL)
 
@@ -74,7 +92,7 @@ DATABASE_NAME=userdb
 DATABASE_PORT=3306
 
 GCS_BUCKET=your-bucket-name
-GOOGLE_APPLICATION_CREDENTIALS=credentials/your-key.json
+GOOGLE_APPLICATION_CREDENTIALS=credentials/your-key.json (Ask for the key form Bilal or Zain)
 ```
 
 Password will differ on each machine. Leave GCS fields empty if not using Google Cloud yet.
@@ -95,21 +113,31 @@ Server runs at **http://127.0.0.1:5000**
 
 ### Auth
 
-| Method | Path          | Body                              | Description       |
-|--------|---------------|-----------------------------------|-------------------|
-| POST   | /auth/signup  | `{email, username, password}`     | Register a user   |
-| POST   | /auth/login   | `{email, password}`               | Authenticate user |
+| Method | Path         | Body                                                     | Description       |
+| ------ | ------------ | -------------------------------------------------------- | ----------------- |
+| POST   | /auth/signup | `{"email": "...", "username": "...", "password": "..."}` | Register a user   |
+| POST   | /auth/login  | `{"email": "...", "password": "..."}`                    | Authenticate user |
 
-### User
+### Get User Info
 
-| Method | Path                          | Body          | Description              |
-|--------|-------------------------------|---------------|--------------------------|
-| GET    | /user/{email}                 | —             | Get user profile         |
-| DELETE | /user/{email}                 | —             | Delete user              |
-| PUT    | /user/{email}/profile-url     | `{url}`       | Update profile picture   |
-| DELETE | /user/{email}/profile-url     | —             | Remove profile picture   |
-| PUT    | /user/{email}/description-url | `{url}`       | Update description file  |
-| DELETE | /user/{email}/description-url | —             | Remove description file  |
+| Method | Path                          | Body | Description              |
+| ------ | ----------------------------- | ---- | ------------------------ |
+| GET    | /user/{email}                 | —    | Get user profile         |
+| DELETE | /user/{email}                 | —    | Delete user              |
+| GET    | /user/id/{email}              | —    | Get user ID              |
+| GET    | /user/profile-url/{email}     | —    | Get user profile URL     |
+| GET    | /user/description-url/{email} | —    | Get user description URL |
+
+### Update User Info
+
+| Method | Path                   | Body                            | Description             |
+| ------ | ---------------------- | ------------------------------- | ----------------------- |
+| POST   | /<email>/profile-photo | form-data, key=file & type=File | Upload user profile pic |
+| DELETE | /<email>/profile-photo | —                               | Delete user profile pic |
+| POST   | /<email>/description   | `{ "description": "..." }`      | Upload user description |
+| DELETE | /<email>/description   | —                               | Delete user description |
+
+###
 
 ---
 
