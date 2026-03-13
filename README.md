@@ -149,10 +149,11 @@ Request → routes/ → services/ → storage/dbQueries.py → storage/Database.
 
 - **routes/** — HTTP layer. Parses requests, validates input, returns JSON responses.
 - **services/** — Business logic. No HTTP knowledge.
-- **storage/dbQueries.py** — All raw SQL queries.
-- **storage/Database.py** — MySQL connection using `.env` credentials.
+- **database/Database.py** — MySQL connection using `.env` credentials.
+- **database/dbQueries.py** — All raw SQL queries.
+- **cloudStorage/GCP.py** — Google Cloud Storage connection for file uploads.
+- **cloudStorage/userInfoStorage.py** - Functions for Upload/Delete user data on GCP Bucket
 - **utils/config.py** — Loads `.env` and exposes all config values.
-- **storage/GCP.py** — Google Cloud Storage connection for file uploads.
 
 ---
 
