@@ -33,10 +33,17 @@ class FileService:
         deleted_from_db = self.user.remove_user_description_url(email)
         return deleted_from_gcs, deleted_from_db
     
-    def update_profile_photo(self, email:str, file) -> str:
-        deleted_from_gcs, deleted_from_db = self.delete_profile_photo(email)
+    def update_profile_photo(self, email:str, file, object_to_update:str) -> str:
+        deleted_from_gcs, deleted_from_db = self.delete_profile_photo(email, object_to_update)
         if not deleted_from_gcs or not deleted_from_db:
             raise Exception("Failed to delete existing profile photo.")
         url, object_name = self.upload_profile_photo(email, file)
+        return url, object_name, deleted_from_gcs, deleted_from_db
+    
+    def update_description(self, email:str, description_text:str, object_to_update:str) -> str:
+        deleted_from_gcs, deleted_from_db = self.delete_description(email, object_to_update)
+        if not deleted_from_gcs or not deleted_from_db:
+            raise Exception("Failed to delete existing description.")
+        url, object_name = self.upload_description(email, description_text)
         return url, object_name, deleted_from_gcs, deleted_from_db
     
