@@ -1,4 +1,4 @@
-from storage.dbQueries import UserModel
+from database.dbQueries import UserModel
 
 
 class UserService:

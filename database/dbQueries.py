@@ -1,4 +1,4 @@
-from storage.Database import Database
+from database.Database import Database
 
 
 class UserModel:
