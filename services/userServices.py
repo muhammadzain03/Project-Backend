@@ -21,6 +21,10 @@ class UserService:
     @staticmethod
     def delete_user(email: str) -> bool:
         return UserModel._remove_user_db(email)
+    
+    @staticmethod
+    def check_user_exists(email: str) -> bool:
+        return UserModel._get_user_id_by_email_db(email)
 
     @staticmethod
     def save_user_profile_url(email: str, profile_url: str) -> bool:

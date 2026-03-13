@@ -65,6 +65,28 @@ class UserModel:
                 conn.close()
 
     @staticmethod
+    def _remove_user_db(email: str) -> bool:
+        try:
+            conn = Database.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "DELETE FROM users WHERE email = %s",
+                (email,),
+            )
+
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error removing user: {e}")
+            return False
+        finally:
+            if cursor:
+                cursor.close()
+            if conn and conn.is_connected():
+                conn.close()
+
+    @staticmethod
     def _save_profile_url_db(email: str, profile_url: str) -> bool:
         try:
             conn = Database.get_connection()
