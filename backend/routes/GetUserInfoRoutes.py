@@ -4,6 +4,7 @@ from services.userServices import UserService
 from services.GCPservices import FileService
 from utils.config import BaseConfig as config
 from utils.gcs_errors import gcs_unavailable_response
+from utils.gcs_signed_urls import object_name_from_stored_gcs_url, sign_user_dict_for_client
 
 user_bp = Blueprint("user", __name__, url_prefix="/user")
 
@@ -29,6 +30,7 @@ def patch_user(email):
     updated = UserService.get_complete_user_info(ne)
     if updated:
         updated.pop("password", None)
+        updated = sign_user_dict_for_client(updated)
     return jsonify({"success": True, "message": "Account updated.", "user": updated}), 200
 
 
@@ -39,7 +41,11 @@ def get_user(email):
     if not user:
         return jsonify({"success": False, "message": "User not found."}), 404
     user.pop("password", None)
-    return jsonify(user), 200
+    user = sign_user_dict_for_client(user)
+    return jsonify(user), 200, {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+        "Pragma": "no-cache",
+    }
 
 # 2) Delete user email 
 @user_bp.delete("/<email>")
@@ -52,9 +58,8 @@ def delete_user(email):
     description_url = UserService.get_user_description_url(email)
 
     if profile_url:     # Deletes profile photo from GCS and database
-        try:
-            profile_object_name = profile_url.split(f"https://storage.googleapis.com/{config.GCS_BUCKET}/")[1]
-        except IndexError:
+        profile_object_name = object_name_from_stored_gcs_url(profile_url)
+        if not profile_object_name:
             return jsonify({"success": False, "message": "Invalid profile URL format."}), 500
 
         try:
@@ -68,9 +73,8 @@ def delete_user(email):
             return jsonify({"success": False, "message": "Failed to delete user's profile photo."}), 500
 
     if description_url:     # Deletes description file from GCS and database
-        try:
-            description_object_name = description_url.split(f"https://storage.googleapis.com/{config.GCS_BUCKET}/")[1]
-        except IndexError:
+        description_object_name = object_name_from_stored_gcs_url(description_url)
+        if not description_object_name:
             return jsonify({"success": False, "message": "Invalid description URL format."}), 500
 
         try:
