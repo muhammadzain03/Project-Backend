@@ -10,3 +10,11 @@ export const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Default JSON Content-Type breaks multipart uploads (boundary must be set by the browser).
+api.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  return config;
+});

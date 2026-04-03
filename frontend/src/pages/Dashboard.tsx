@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,6 +17,16 @@ interface UserProfile {
   userDescriptionURL: string | null;
 }
 
+/** GCS v4 signed URLs must not get extra query params — that invalidates the signature. */
+function isGcsSignedUrl(url: string): boolean {
+  return url.includes('X-Goog-Signature') || url.includes('X-Goog-Algorithm=');
+}
+
+function pictureUrlForAvatar(baseUrl: string, version: number): string {
+  if (isGcsSignedUrl(baseUrl)) return baseUrl;
+  return `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}v=${version}`;
+}
+
 export default function Dashboard() {
   const { userEmail, logout, login } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -29,11 +39,18 @@ export default function Dashboard() {
   const [accountUsername, setAccountUsername] = useState('');
   const [accountEmail, setAccountEmail] = useState('');
   const [activeTab, setActiveTab] = useState<'profile' | 'settings'>('profile');
+  const [avatarVersion, setAvatarVersion] = useState(0);
+  const avatarLoadErrorShown = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
+    if (!userEmail) {
+      return;
+    }
     try {
-      const res = await api.get(`/user/${userEmail}`);
+      const res = await api.get(`/user/${encodeURIComponent(userEmail)}`, {
+        params: { _: Date.now() },
+      });
       setProfile(res.data);
       if (res.data.userDescriptionURL) {
         try {
@@ -49,13 +66,15 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userEmail]);
 
   useEffect(() => {
-    if (userEmail) {
-      fetchProfile();
+    if (!userEmail) {
+      return;
     }
-  }, [userEmail]);
+    setLoading(true);
+    void fetchProfile();
+  }, [userEmail, fetchProfile]);
 
   useEffect(() => {
     if (profile) {
@@ -63,6 +82,15 @@ export default function Dashboard() {
       setAccountEmail(profile.email);
     }
   }, [profile]);
+
+  useEffect(() => {
+    avatarLoadErrorShown.current = false;
+  }, [profile?.pictureURL]);
+
+  const pictureSrc =
+    profile?.pictureURL != null && profile.pictureURL !== ''
+      ? pictureUrlForAvatar(profile.pictureURL, avatarVersion)
+      : undefined;
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,13 +101,25 @@ export default function Dashboard() {
 
     setUploadingPhoto(true);
     try {
-      await api.post(`/user/${userEmail}/profile-photo`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await api.post<{
+        success?: boolean;
+        url?: string;
+      }>(`/user/${encodeURIComponent(userEmail!)}/profile-photo`, formData);
+      const newUrl = res.data?.url;
+      if (newUrl) {
+        setProfile((prev) => (prev ? { ...prev, pictureURL: newUrl } : prev));
+      }
       toast.success('Profile photo updated');
-      fetchProfile();
-    } catch {
-      toast.error('Failed to upload photo');
+      await fetchProfile();
+      setAvatarVersion((n) => n + 1);
+    } catch (err: unknown) {
+      const ax = err as { response?: { data?: { message?: string }; status?: number } };
+      const msg =
+        ax.response?.data?.message ||
+        (ax.response?.status === 503
+          ? 'Cloud storage unavailable — check GCP credentials in .env and credentials/.'
+          : 'Failed to upload photo');
+      toast.error(msg);
     } finally {
       setUploadingPhoto(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -88,18 +128,21 @@ export default function Dashboard() {
 
   const handleDeletePhoto = async () => {
     try {
-      await api.delete(`/user/${userEmail}/profile-photo`);
+      await api.delete(`/user/${encodeURIComponent(userEmail!)}/profile-photo`);
       toast.success('Profile photo removed');
-      fetchProfile();
-    } catch {
-      toast.error('Failed to remove photo');
+      setProfile((prev) => (prev ? { ...prev, pictureURL: null } : prev));
+      await fetchProfile();
+      setAvatarVersion((n) => n + 1);
+    } catch (err: unknown) {
+      const ax = err as { response?: { data?: { message?: string } } };
+      toast.error(ax.response?.data?.message || 'Failed to remove photo');
     }
   };
 
   const handleSaveDescription = async () => {
     setSavingDesc(true);
     try {
-      await api.post(`/user/${userEmail}/description`, { description });
+      await api.post(`/user/${encodeURIComponent(userEmail!)}/description`, { description });
       toast.success('Description updated');
       fetchProfile();
     } catch {
@@ -111,7 +154,7 @@ export default function Dashboard() {
 
   const handleDeleteDescription = async () => {
     try {
-      await api.delete(`/user/${userEmail}/description`);
+      await api.delete(`/user/${encodeURIComponent(userEmail!)}/description`);
       setDescription('');
       toast.success('Description removed');
       fetchProfile();
@@ -159,7 +202,7 @@ export default function Dashboard() {
     }
     setDeletingAccount(true);
     try {
-      await api.delete(`/user/${userEmail}`);
+      await api.delete(`/user/${encodeURIComponent(userEmail!)}`);
       toast.success('Account deleted successfully');
       logout();
     } catch {
@@ -183,8 +226,22 @@ export default function Dashboard() {
           <div className="panel p-6 text-center relative overflow-hidden group">
             <div className="relative mx-auto w-32 h-32 mb-6">
               <div className="relative z-10 w-full h-full">
-                <Avatar className="w-full h-full border-2 border-zinc-700 bg-zinc-900">
-                  <AvatarImage src={profile?.pictureURL || ''} alt={profile?.username} className="object-cover" />
+                <Avatar
+                  key={`${profile?.pictureURL ?? 'none'}-${avatarVersion}`}
+                  className="w-full h-full border-2 border-zinc-700 bg-zinc-900"
+                >
+                  <AvatarImage
+                    src={pictureSrc}
+                    alt={profile?.username}
+                    className="object-cover"
+                    onError={() => {
+                      if (avatarLoadErrorShown.current) return;
+                      avatarLoadErrorShown.current = true;
+                      toast.error(
+                        'Photo URL saved but the image did not load. In GCP Console: open the bucket → Permissions → grant public read to objects, or use signed URLs.'
+                      );
+                    }}
+                  />
                   <AvatarFallback className="text-3xl font-medium text-zinc-300">
                     {profile?.username?.charAt(0).toUpperCase()}
                   </AvatarFallback>
