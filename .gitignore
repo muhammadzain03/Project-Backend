@@ -22,3 +22,7 @@ env/
 # Frontend (Node / Vite)
 frontend/node_modules/
 frontend/dist/
+
+# Load tests — generated CSVs / reports (regenerate with run_matrix.py / analyze_results.py)
+load_tests/results/
+load_tests/analysis/
