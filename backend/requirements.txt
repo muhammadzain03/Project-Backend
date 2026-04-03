@@ -1,0 +1,6 @@
+flask
+flask-cors
+mysql-connector-python
+bcrypt
+python-dotenv
+google-cloud-storage

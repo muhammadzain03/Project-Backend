@@ -4,12 +4,11 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Environment
+# Environment (single file at monorepo root)
 .env
 
 # Google Cloud credentials
 credentials/
-*.json
 
 # Virtual environment
 venv/
@@ -19,3 +18,7 @@ env/
 # IDE
 .vscode/
 .idea/
+
+# Frontend (Node / Vite)
+frontend/node_modules/
+frontend/dist/
