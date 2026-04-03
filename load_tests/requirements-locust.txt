@@ -1,0 +1,8 @@
+# Locust load testing
+locust>=2.29
+Pillow>=10.0
+
+# Analysis (only needed for analyze_results.py)
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
