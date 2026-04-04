@@ -1,0 +1,30 @@
+# Frontend (not deployed to Cloud Run)
+frontend/
+frontend/node_modules/
+frontend/dist/
+
+# Load tests
+load_tests/
+
+# Git
+.git/
+.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Env file (secrets go in Cloud Run env vars, not baked into image)
+.env
+.env.example
+
+# Docs
+*.md
+LICENSE
+
+# Windows scripts
+*.bat

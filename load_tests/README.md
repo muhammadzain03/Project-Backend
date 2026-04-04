@@ -23,6 +23,12 @@ pip install -r requirements-locust.txt
 
 Paths like `/user/{email}` use **URL-encoded** emails (e.g. `%40` for `@`) to match the production frontend and Flask routing.
 
+### `--host` must be a real URL
+
+- **Local Flask:** `http://127.0.0.1:5000` (no `https`; start the backend first).
+- **Cloud Run:** paste the **exact** HTTPS URL from the Google Cloud Console (e.g. `https://profilehub-xxxxx-uc.a.run.app`).  
+  Do **not** use placeholder text like `your-cloudrun-url.run.app` — that hostname is not your service, and you will get **`SSL: CERTIFICATE_VERIFY_FAILED` / hostname mismatch** because the TLS certificate does not match a fake name.
+
 ## 1. Manual run (Locust web UI)
 
 ```bash
