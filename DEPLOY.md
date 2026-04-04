@@ -1,5 +1,7 @@
 # Cloud Run Deployment Guide — SENG 533
 
+See also the monorepo **[README.md](README.md)** for local setup and repository layout.
+
 ## Prerequisites
 
 You already have:
@@ -34,25 +36,9 @@ gcloud services enable \
   artifactregistry.googleapis.com
 ```
 
-### 3. Place the deployment files
+### 3. Repository layout
 
-Copy these files into your monorepo root (same level as `backend/` and `frontend/`):
-
-```
-SENG 533 - Project/
-├── Dockerfile          ← new
-├── .dockerignore       ← new
-├── backend/
-│   ├── cloudStorage/
-│   │   └── GCP.py      ← replace with updated version
-│   ├── database/
-│   │   └── Database.py  ← replace with connection pooling version
-│   ├── utils/
-│   │   └── config.py    ← replace with updated version
-│   └── ...
-├── frontend/
-└── load_tests/
-```
+This repository already includes **`Dockerfile`**, **`.dockerignore`**, and the backend files at `backend/cloudStorage/GCP.py`, `backend/database/Database.py`, and `backend/utils/config.py`. Deploy from the **monorepo root** (the folder that contains `backend/`, `frontend/`, and `Dockerfile`).
 
 ### 4. Find your Cloud SQL connection name
 

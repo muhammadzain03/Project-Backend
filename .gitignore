@@ -1,28 +1,33 @@
-# Python cache
+# ── Python ─────────────────────────────────────────────────────────
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
 
-# Environment (single file at monorepo root)
+# ── Secrets & local config (never commit) ───────────────────────────
 .env
-
-# Google Cloud credentials
+.env.local
 credentials/
 
-# Virtual environment
+# ── Virtual environments ────────────────────────────────────────────
 venv/
 .venv/
 env/
 
-# IDE
+# ── IDE / OS ──────────────────────────────────────────────────────
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
+*.log
 
-# Frontend (Node / Vite)
+# ── Frontend (Vite / React) ─────────────────────────────────────────
 frontend/node_modules/
 frontend/dist/
+frontend/coverage/
+.eslintcache
 
-# Load tests — generated CSVs / reports (regenerate with run_matrix.py / analyze_results.py)
+# ── Load tests — generated artifacts ────────────────────────────────
 load_tests/results/
 load_tests/analysis/

@@ -2,6 +2,8 @@
 
 Load-testing suite for the ProfileHub backend using [Locust](https://locust.io/).
 
+**Repository overview:** see the monorepo [README.md](../README.md) (environment, structure, deployment). This document covers only Locust and result analysis.
+
 ## Files
 
 | File | Purpose |
@@ -76,13 +78,13 @@ python run_matrix.py --dry-run
 
 ## 3. Analyze results
 
-After `run_matrix.py` finishes:
+After `run_matrix.py` finishes (run from **`load_tests/`**):
 
 ```bash
 python analyze_results.py
 ```
 
-Outputs to `analysis/`:
+Outputs to **`load_tests/analysis/`** (gitignored by default):
 - `summary_table.csv` — per-endpoint means with 95% CIs
 - `pivot_by_users.csv` — avg response time by concurrency level
 - `throughput_summary.csv` — RPS by workload type
