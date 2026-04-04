@@ -6,7 +6,11 @@ from dotenv import load_dotenv
 # Monorepo root: backend/utils -> parents[2] == SENG 533 - Project
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-load_dotenv(PROJECT_ROOT / ".env")
+# Load .env if it exists (local dev). On Cloud Run, env vars are
+# injected directly — no .env file present.
+_env_path = PROJECT_ROOT / ".env"
+if _env_path.is_file():
+    load_dotenv(_env_path)
 
 
 def _resolve_optional_path(value: str | None) -> str | None:
