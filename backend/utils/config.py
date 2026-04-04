@@ -48,3 +48,6 @@ class BaseConfig:
     DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
     DATABASE_NAME = os.environ.get("DATABASE_NAME")
     DATABASE_PORT = int(os.environ.get("DATABASE_PORT", "3306"))
+
+    # Connection pool size (0 = disabled, falls back to per-query connections)
+    DB_POOL_SIZE = int(os.environ.get("DB_POOL_SIZE", "10"))
