@@ -28,3 +28,6 @@ LICENSE
 
 # Windows scripts
 *.bat
+
+# SQL schema (one-time DDL, not needed at runtime)
+*.sql
