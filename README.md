@@ -25,8 +25,7 @@ Full - Project/
 │
 ├── frontend/                 ← React (Vite) SPA
 │   ├── src/
-│   ├── vite.config.ts        ← dev proxy /auth and /user → Flask :5000
-│   └── .env.example          ← optional VITE_API_URL override
+│   └── vite.config.ts        ← dev proxy /auth and /user → Flask :5000
 │
 └── load_tests/               ← Locust + experiment matrix + analysis
     ├── README.md             ← how to run Locust & analyze CSVs
@@ -68,6 +67,18 @@ Create a file **`.env` in the monorepo root** (same folder as this `README.md`).
 | `GOOGLE_APPLICATION_CREDENTIALS` | Path to service account JSON (local dev). On **Cloud Run**, omit — use the runtime service account. |
 
 Frontend: **`VITE_*`** variables are read from the **monorepo root** (`envDir` in Vite). For local dev, leave `VITE_API_URL` **unset** so the Vite **proxy** sends `/auth` and `/user` to `http://127.0.0.1:5000`. To call the API directly (no proxy), set e.g. `VITE_API_URL=http://127.0.0.1:5000` in `.env`.
+
+---
+
+## Database setup (one-time)
+
+Create the database and `users` table:
+
+```bash
+mysql -u root -p < backend/database/schema.sql
+```
+
+For Cloud SQL, run the same command against the Cloud SQL Auth Proxy (`mysql -h 127.0.0.1 -u root -p < backend/database/schema.sql`). The script uses `CREATE ... IF NOT EXISTS`, so it's safe to re-run.
 
 ---
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Monorepo root: backend/utils -> parents[2] == SENG 533 - Project
+# Monorepo root: backend/utils/config.py -> parents[2] == Full - Project/
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # Load .env if it exists (local dev). On Cloud Run, env vars are
