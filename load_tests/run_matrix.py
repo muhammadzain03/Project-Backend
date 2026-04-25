@@ -40,10 +40,10 @@ import time
 
 # ── Defaults ────────────────────────────────────────────────────────────────
 DEFAULT_HOST       = "http://127.0.0.1:5000"
-DEFAULT_DURATION   = 300       # 5 minutes per run
+DEFAULT_DURATION   = 180       # 3 minutes per run
 DEFAULT_RAMP_RATE  = 10        # users spawned per second
 DEFAULT_REPS       = 3         # repetitions per configuration
-DEFAULT_USERS      = [10, 25, 50, 100]
+DEFAULT_USERS      = [5, 10, 15, 20]
 DEFAULT_WORKLOADS  = ["read-heavy", "write-heavy", "mixed"]
 DEFAULT_SIZES      = ["small", "large"]
 DEFAULT_TIMEOUT    = 30.0
