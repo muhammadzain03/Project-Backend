@@ -106,7 +106,7 @@ class ProfileHubUser(HttpUser):
     on_stop   → optionally deletes the user (cleanup mode)
     """
 
-    wait_time = between(0.5, 2.0)
+    wait_time = between(1.0, 2.0)
 
     # ── Setup ───────────────────────────────────────────────────────────────
     def on_start(self):
