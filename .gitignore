@@ -1,33 +1,33 @@
-# ── Python ─────────────────────────────────────────────────────────
+# -- Python ---------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 
-# ── Secrets & local config (never commit) ───────────────────────────
+# -- Secrets & local config (never commit) ---------------------------
 .env
 .env.local
 credentials/
 
-# ── Virtual environments ────────────────────────────────────────────
+# -- Virtual environments --------------------------------------------
 venv/
 .venv/
 env/
 
-# ── IDE / OS ──────────────────────────────────────────────────────
+# -- IDE / OS ------------------------------------------------------
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 *.log
 
-# ── Frontend (Vite / React) ─────────────────────────────────────────
+# -- Frontend (Vite / React) -----------------------------------------
 frontend/node_modules/
 frontend/dist/
 frontend/coverage/
 .eslintcache
 
-# ── Load tests — generated artifacts ────────────────────────────────
+# -- Load tests – generated artifacts --------------------------------
 load_tests/results/
 load_tests/analysis/

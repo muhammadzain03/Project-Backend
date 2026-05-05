@@ -24,7 +24,7 @@ _pool_size: int = config.BaseConfig.DB_POOL_SIZE
 def _init_pool() -> pooling.MySQLConnectionPool | None:
     """Create the connection pool once. Called at module import."""
     if _pool_size < 1:
-        logging.info("DB_POOL_SIZE=%s — connection pooling disabled.", _pool_size)
+        logging.info("DB_POOL_SIZE=%s – connection pooling disabled.", _pool_size)
         return None
 
     try:
@@ -63,7 +63,7 @@ class Database:
         Borrow a connection from the pool, or create a fresh one if
         pooling is disabled / unavailable.
 
-        Callers MUST close the connection in a finally block — this
+        Callers MUST close the connection in a finally block – this
         returns it to the pool rather than destroying it.
         """
         if _pool is not None:

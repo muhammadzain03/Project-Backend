@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """
-analyze_results.py — Post-processing for SENG 533 load-test results.
+analyze_results.py – Post-processing for SENG 533 load-test results.
 
 Reads all Locust CSV files from the results/ directory, computes 95%
 confidence intervals across repetitions, and outputs summary tables
 suitable for the final report.
 
 Output
-──────
+------
   analysis/
-    summary_table.csv           — per-endpoint metrics with 95% CIs
-    pivot_by_users.csv          — response time by concurrency level
-    pivot_by_workload.csv       — response time by workload type
-    throughput_summary.csv      — RPS by configuration
-    report_tables.txt           — formatted tables ready to paste
+    summary_table.csv           – per-endpoint metrics with 95% CIs
+    pivot_by_users.csv          – response time by concurrency level
+    pivot_by_workload.csv       – response time by workload type
+    throughput_summary.csv      – RPS by configuration
+    report_tables.txt           – formatted tables ready to paste
 
 Usage
-─────
+-----
   python analyze_results.py                         # default: reads results/
   python analyze_results.py --results-dir results/  # explicit path
 """
@@ -221,7 +221,7 @@ def format_report_table(summary: pd.DataFrame) -> str:
     """Format key results as plain-text tables for pasting into the report."""
     lines = []
     lines.append("=" * 90)
-    lines.append("SENG 533 — Load Test Summary (95% Confidence Intervals)")
+    lines.append("SENG 533 – Load Test Summary (95% Confidence Intervals)")
     lines.append("=" * 90)
 
     agg = summary[summary["endpoint"] == "AGGREGATE"].copy()

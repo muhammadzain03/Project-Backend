@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # Load .env if it exists (local dev). On Cloud Run, env vars are
-# injected directly — no .env file present.
+# injected directly – no .env file present.
 _env_path = PROJECT_ROOT / ".env"
 if _env_path.is_file():
     load_dotenv(_env_path)

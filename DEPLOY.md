@@ -1,4 +1,4 @@
-# Cloud Run Deployment Guide — SENG 533
+# Cloud Run Deployment Guide – SENG 533
 
 See also the monorepo **[README.md](README.md)** for local setup and repository layout.
 
@@ -11,7 +11,7 @@ You already have:
 
 You need:
 - [Google Cloud CLI (`gcloud`)](https://cloud.google.com/sdk/docs/install) installed on your PC
-- Docker is NOT required — Cloud Build builds the image for you in the cloud
+- Docker is NOT required – Cloud Build builds the image for you in the cloud
 
 ---
 
@@ -90,7 +90,7 @@ After deployment, gcloud prints:
 Service URL: https://profilehub-backend-XXXX-uc.a.run.app
 ```
 
-Copy this URL — this is what you'll point Locust at.
+Copy this URL – this is what you'll point Locust at.
 
 ### 7. Verify it works
 

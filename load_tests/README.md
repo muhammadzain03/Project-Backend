@@ -1,4 +1,4 @@
-# SENG 533 — Load tests
+# SENG 533 – Load tests
 
 Load-testing suite for the ProfileHub backend using [Locust](https://locust.io/).
 
@@ -8,10 +8,10 @@ Load-testing suite for the ProfileHub backend using [Locust](https://locust.io/)
 
 | File | Purpose |
 |---|---|
-| `locustfile.py` | Locust user behaviour — signup, login, profile reads, photo/description writes |
+| `locustfile.py` | Locust user behaviour – signup, login, profile reads, photo/description writes |
 | `data_generators.py` | Unique emails, credentials, random images (PNG + JPEG), descriptions |
-| `run_matrix.py` | Headless batch runner — iterates the full experiment matrix |
-| `analyze_results.py` | Post-processing — 95% confidence intervals, summary tables |
+| `run_matrix.py` | Headless batch runner – iterates the full experiment matrix |
+| `analyze_results.py` | Post-processing – 95% confidence intervals, summary tables |
 | `requirements-locust.txt` | Python dependencies |
 
 ## Quick start
@@ -29,7 +29,7 @@ Paths like `/user/{email}` use **URL-encoded** emails (e.g. `%40` for `@`) to ma
 
 - **Local Flask:** `http://127.0.0.1:5000` (no `https`; start the backend first).
 - **Cloud Run:** paste the **exact** HTTPS URL from the Google Cloud Console (e.g. `https://profilehub-xxxxx-uc.a.run.app`).  
-  Do **not** use placeholder text like `your-cloudrun-url.run.app` — that hostname is not your service, and you will get **`SSL: CERTIFICATE_VERIFY_FAILED` / hostname mismatch** because the TLS certificate does not match a fake name.
+  Do **not** use placeholder text like `your-cloudrun-url.run.app` – that hostname is not your service, and you will get **`SSL: CERTIFICATE_VERIFY_FAILED` / hostname mismatch** because the TLS certificate does not match a fake name.
 
 ## 1. Manual run (Locust web UI)
 
@@ -85,10 +85,10 @@ python analyze_results.py
 ```
 
 Outputs to **`load_tests/analysis/`** (gitignored by default):
-- `summary_table.csv` — per-endpoint means with 95% CIs
-- `pivot_by_users.csv` — avg response time by concurrency level
-- `throughput_summary.csv` — RPS by workload type
-- `report_tables.txt` — formatted tables for the final report
+- `summary_table.csv` – per-endpoint means with 95% CIs
+- `pivot_by_users.csv` – avg response time by concurrency level
+- `throughput_summary.csv` – RPS by workload type
+- `report_tables.txt` – formatted tables for the final report
 
 ## Endpoints tested
 

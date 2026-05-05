@@ -17,7 +17,7 @@ interface UserProfile {
   userDescriptionURL: string | null;
 }
 
-/** GCS v4 signed URLs must not get extra query params — that invalidates the signature. */
+/** GCS v4 signed URLs must not get extra query params – that invalidates the signature. */
 function isGcsSignedUrl(url: string): boolean {
   return url.includes('X-Goog-Signature') || url.includes('X-Goog-Algorithm=');
 }
@@ -117,7 +117,7 @@ export default function Dashboard() {
       const msg =
         ax.response?.data?.message ||
         (ax.response?.status === 503
-          ? 'Cloud storage unavailable — check GCP credentials in .env and credentials/.'
+          ? 'Cloud storage unavailable – check GCP credentials in .env and credentials/.'
           : 'Failed to upload photo');
       toast.error(msg);
     } finally {
@@ -372,7 +372,7 @@ export default function Dashboard() {
                       className="bg-zinc-950 border-zinc-800 text-zinc-500 h-10 rounded-lg"
                       aria-readonly
                     />
-                    <p className="text-xs text-zinc-600">Primary key — not editable.</p>
+                    <p className="text-xs text-zinc-600">Primary key – not editable.</p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="settings-username" className="text-zinc-500 text-xs">

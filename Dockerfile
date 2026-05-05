@@ -1,4 +1,4 @@
-# ── SENG 533 — ProfileHub Backend ────────────────────────────────────
+# -- SENG 533 – ProfileHub Backend ------------------------------------
 # Build:  gcloud builds submit --tag gcr.io/PROJECT_ID/profilehub-backend
 # Deploy: gcloud run deploy profilehub-backend --image gcr.io/PROJECT_ID/profilehub-backend ...
 

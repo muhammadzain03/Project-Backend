@@ -2,7 +2,7 @@
 Locust load-test for the SENG 533 ProfileHub backend.
 
 Endpoints exercised
-───────────────────
+-------------------
   Read operations:
     POST /auth/login             (authenticates existing user)
     GET  /user/{email}           (fetches full profile)
@@ -11,18 +11,18 @@ Endpoints exercised
     POST /user/{email}/description     (JSON description upload)
     POST /user/{email}/profile-photo   (image upload, large mode only)
 
-  Setup  (on_start):  POST /auth/signup   — creates the test user
-  Teardown (on_stop): DELETE /user/{email} — optional cleanup
+  Setup  (on_start):  POST /auth/signup   – creates the test user
+  Teardown (on_stop): DELETE /user/{email} – optional cleanup
 
 CLI flags
-─────────
+---------
   --workload-type   read-heavy | write-heavy | mixed   (default: mixed)
   --data-size       small | large                       (default: large)
   --cleanup         off | on                            (default: off)
   --request-timeout seconds                             (default: 30)
 
 Usage
-─────
+-----
   # Headless (used by run_matrix.py):
   locust -f locustfile.py --host http://127.0.0.1:5000 \\
          --headless -u 50 -r 10 -t 300s \\
@@ -48,7 +48,7 @@ from data_generators import (
     random_png_bytes,
 )
 
-# ── Workload mix ratios ─────────────────────────────────────────────────────
+# -- Workload mix ratios -----------------------------------------------------
 # Value = probability that any given task iteration is a READ operation.
 READ_RATIO = {
     "read-heavy":  0.80,
@@ -62,7 +62,7 @@ def _user_path_prefix(email: str) -> str:
     return f"/user/{quote(email, safe='')}"
 
 
-# ── Custom CLI arguments ────────────────────────────────────────────────────
+# -- Custom CLI arguments ----------------------------------------------------
 @events.init_command_line_parser.add_listener
 def _(parser):
     parser.add_argument(
@@ -94,13 +94,13 @@ def _(parser):
     )
 
 
-# ── Locust user class ──────────────────────────────────────────────────────
+# -- Locust user class ------------------------------------------------------
 class ProfileHubUser(HttpUser):
     """
     Simulates a single user interacting with the ProfileHub backend.
 
     Lifecycle
-    ─────────
+    ---------
     on_start  → signs up a brand-new user (POST /auth/signup)
     @task     → randomly picks a read or write operation per the workload ratio
     on_stop   → optionally deletes the user (cleanup mode)
@@ -108,7 +108,7 @@ class ProfileHubUser(HttpUser):
 
     wait_time = between(0.5, 2.0)
 
-    # ── Setup ───────────────────────────────────────────────────────────────
+    # -- Setup ---------------------------------------------------------------
     def on_start(self):
         opts = self.environment.parsed_options
 
@@ -135,7 +135,7 @@ class ProfileHubUser(HttpUser):
         self.timeout         = opts.request_timeout
         self.read_ratio      = READ_RATIO[self.workload_type]
 
-        # Sign up — creates the user row in MySQL
+        # Sign up – creates the user row in MySQL
         self.client.post(
             "/auth/signup",
             json={
@@ -147,9 +147,9 @@ class ProfileHubUser(HttpUser):
             timeout=self.timeout,
         )
 
-    # ── Read operations ─────────────────────────────────────────────────────
+    # -- Read operations -----------------------------------------------------
     def _do_login(self):
-        """POST /auth/login — exercises bcrypt verify + MySQL lookup."""
+        """POST /auth/login – exercises bcrypt verify + MySQL lookup."""
         self.client.post(
             "/auth/login",
             json={
@@ -161,7 +161,7 @@ class ProfileHubUser(HttpUser):
         )
 
     def _do_get_profile(self):
-        """GET /user/{email} — fetches full profile row from MySQL."""
+        """GET /user/{email} – fetches full profile row from MySQL."""
         self.client.get(
             _user_path_prefix(self.email),
             name="GET /user/[email]",
@@ -175,9 +175,9 @@ class ProfileHubUser(HttpUser):
         else:
             self._do_get_profile()
 
-    # ── Write operations ────────────────────────────────────────────────────
+    # -- Write operations ----------------------------------------------------
     def _do_upload_description(self):
-        """POST /user/{email}/description — uploads JSON description to GCS."""
+        """POST /user/{email}/description – uploads JSON description to GCS."""
         self.client.post(
             f"{_user_path_prefix(self.email)}/description",
             json={"description": self.description},
@@ -186,7 +186,7 @@ class ProfileHubUser(HttpUser):
         )
 
     def _do_upload_photo(self):
-        """POST /user/{email}/profile-photo — uploads image to GCS."""
+        """POST /user/{email}/profile-photo – uploads image to GCS."""
         file_obj = BytesIO(self.image_bytes)
         self.client.post(
             f"{_user_path_prefix(self.email)}/profile-photo",
@@ -209,7 +209,7 @@ class ProfileHubUser(HttpUser):
             else:
                 self._do_upload_description()
 
-    # ── Main task ───────────────────────────────────────────────────────────
+    # -- Main task -----------------------------------------------------------
     @task
     def do_operation(self):
         """Single task iteration: read or write based on workload ratio."""
@@ -218,7 +218,7 @@ class ProfileHubUser(HttpUser):
         else:
             self._write()
 
-    # ── Teardown ────────────────────────────────────────────────────────────
+    # -- Teardown ------------------------------------------------------------
     def on_stop(self):
         if not self.cleanup_enabled:
             return

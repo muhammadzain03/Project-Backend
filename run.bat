@@ -3,7 +3,7 @@ setlocal EnableExtensions
 cd /d "%~dp0"
 
 echo.
-echo  SENG 533 — starting backend (Flask :5000) and frontend (Vite :3000)
+echo  SENG 533 – starting backend (Flask :5000) and frontend (Vite :3000)
 echo  Close each window to stop that process.
 echo.
 

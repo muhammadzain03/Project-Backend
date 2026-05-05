@@ -7,7 +7,7 @@ export default function Landing() {
     <div className="min-h-screen bg-app text-zinc-100">
       <div className="mx-auto max-w-3xl px-4 py-16 md:py-24">
         <p className="text-sm font-medium uppercase tracking-wide text-zinc-500 mb-3">
-          SENG 533 — performance evaluation demo
+          SENG 533 – performance evaluation demo
         </p>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">
           ProfileHub

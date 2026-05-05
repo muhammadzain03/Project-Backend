@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-run_matrix.py — Headless batch runner for the SENG 533 experiment matrix.
+run_matrix.py – Headless batch runner for the SENG 533 experiment matrix.
 
 Iterates every combination of:
   - workload type   : read-heavy, write-heavy, mixed
@@ -12,7 +12,7 @@ Each run executes Locust in headless mode for a configurable duration,
 then saves the CSV output to a structured directory.
 
 Output structure
-────────────────
+----------------
   results/
     mixed_large_50_run1/
       mixed_large_50_run1_stats.csv
@@ -23,7 +23,7 @@ Output structure
       ...
 
 Usage
-─────
+-----
   python run_matrix.py                                         # all defaults
   python run_matrix.py --host https://your-cloudrun-url.run.app
   python run_matrix.py --duration 180 --reps 5                 # 3-min runs, 5 reps
@@ -38,7 +38,7 @@ import sys
 import time
 
 
-# ── Defaults ────────────────────────────────────────────────────────────────
+# -- Defaults ----------------------------------------------------------------
 DEFAULT_HOST       = "http://127.0.0.1:5000"
 DEFAULT_DURATION   = 300       # 5 minutes per run
 DEFAULT_RAMP_RATE  = 10        # users spawned per second
@@ -119,7 +119,7 @@ def run_single(
     result = subprocess.run(cmd, cwd=os.path.dirname(LOCUSTFILE) or ".")
     elapsed = time.time() - start
 
-    print(f"  Finished in {elapsed:.0f}s — exit code {result.returncode}")
+    print(f"  Finished in {elapsed:.0f}s – exit code {result.returncode}")
     return result.returncode == 0
 
 
@@ -133,7 +133,7 @@ def main():
     total_runs = len(workloads) * len(sizes) * len(user_levels) * args.reps
     total_time_min = (total_runs * args.duration) / 60
 
-    print(f"\nSENG 533 — Experiment matrix")
+    print(f"\nSENG 533 – Experiment matrix")
     print(f"  Host:       {args.host}")
     print(f"  Workloads:  {workloads}")
     print(f"  Sizes:      {sizes}")
@@ -172,7 +172,7 @@ def main():
                         failed += 1
 
     print(f"\n{'='*70}")
-    print(f"  MATRIX COMPLETE — {completed} passed, {failed} failed out of {total_runs}")
+    print(f"  MATRIX COMPLETE – {completed} passed, {failed} failed out of {total_runs}")
     print(f"  Results in: {os.path.abspath(args.outdir)}/")
     print(f"{'='*70}\n")
 
